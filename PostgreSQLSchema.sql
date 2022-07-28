@@ -1,3 +1,25 @@
+-- reviews.csv
+-- id,product_id,rating,date,summary,body,recommend,reported,reviewer_name,reviewer_email,response,helpfulness
+-- 1,1,5,1596080481467,"This product was great!","I really did or did not like this product based on whether it was sustainably sourced.  Then I found out that its made from nothing at all.",true,false,"funtime","first.last@gmail.com",null,8
+-- 2,1,4,1610178433963,"This product was ok!","I really did not like this product solely because I am tiny and do not fit into it.",false,false,"mymainstreammother","first.last@gmail.com",null,2
+
+-- characteristics_reviews.csv
+-- id,characteristic_id,review_id,value
+-- 1,1,1,4
+-- 2,2,1,3
+-- 3,3,1,5
+
+-- reviews_photos.csv
+-- id,review_id,url
+-- 1,5,"https://images.unsplash.com/photo-1560570803-7474c0f9af99?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=975&q=80"
+-- 2,5,"https://images.unsplash.com/photo-1561693532-9ff59442a7db?ixlib=rb-1.2.1&auto=format&fit=crop&w=975&q=80"
+
+-- characteristics.csv
+-- id,product_id,name
+-- 1,1,"Fit"
+-- 2,1,"Length"
+-- 3,1,"Comfort"
+-- 4,1,"Quality"
 CREATE TABLE product (
   product_id INTEGER UNIQUE,
   meta_data INTEGER,
@@ -5,6 +27,7 @@ CREATE TABLE product (
   PRIMARY KEY product_id
 );
 
+-- avg and totals will be calculated based on review table
 CREATE TABLE meta_data (
   id INTEGER SERIAL,
   product_id INTEGER,
@@ -12,38 +35,6 @@ CREATE TABLE meta_data (
   total_recommended INTEGER,
   avg_characteristics INTEGER,
   PRIMARY KEY product_id REFERENCES product(product_id),
-  FOREIGN KEY total_ratings REFERENCES total_ratings(id) WHERE product_id = total_ratings(product_id),
-  FOREIGN KEY total_recommended REFERENCES total_recommended(id) WHERE product_id = total_recommended(product_id),
-  FOREIGN KEY avg_characteristics REFERENCES avg_characteristics(id) WHERE product_id = avg_characteristics(product_id)
-)
-
-CREATE TABLE total_ratings (
-  id INTEGER SERIAL,
-  product_id INTEGER,
-  five INTEGER,
-  four INTEGER,
-  three INTEGER,
-  two INTEGER,
-  one INTEGER,
-  PRIMARY KEY id
-)
-
-CREATE TABLE total_recommended (
-  id INTEGER SERIAL,
-  product_id INTEGER,
-  true BOOLEAN,
-  false BOOLEAN
-  PRIMARY KEY id
-)
-
-CREATE TABLE avg_characteristics (
-  id INTEGER SERIAL,
-  product_id INTEGER,
-  fit DECIMAL(3, 2),
-  _length DECIMAL(3, 2),
-  comfort DECIMAL(3,2),
-  quality DECIMAL (3,2),
-  PRIMARY KEY id
 )
 
 CREATE TABLE reviews (
@@ -56,9 +47,10 @@ CREATE TABLE reviews (
   recommended BOOLEAN,
   characteristics INTEGER,
   helpfulness BOOLEAN,
+  reported BOOLEAN,
   photos text[][]
   reviewer_name TEXT,
-  email TEXT
+  reviewer_email TEXT,
   PRIMARY KEY review_id,
   FOREIGN KEY characteristics REFERENCES characteristics(id) WHERE review_id = characteristics(review_id)
 )
