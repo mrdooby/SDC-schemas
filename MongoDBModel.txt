@@ -1,109 +1,109 @@
-const ProductSchema = mongoose.Schema({
-  // unique product id
-  product_id: {
-    type: Number,
-    unique: true,
-    required: true
-  },
-  // {true, false}
-  total_recommended: {
-    type: Object,
-    unique: true,
-    required: true
-  },
-  // {fit, length, comfort, quality}
-  avg_characteristics: {
-    type: Object,
-    unique: true,
-    required: true
-  },
-  // {1, 2, 3, 4, 5}
-  total_ratings: {
-    type: Object,
-    unique: true,
-    required: true
-  },
-  // [...reviews]
-  // db.ReviewSchema.find({product_id: product_id}).populate('total_reviews');
-  // something along these lines
-  total_reviews: {
-    type: Array,
-    unique: true,
-    required: true
-  },
-});
+// -- reviews.csv
+// -- id,product_id,rating,date,summary,body,recommend,reported,reviewer_name,reviewer_email,response,helpfulness
 
-const ReviewSchema = mongoose.Schema({
-  // unique product id, will be referenced by product schema for total_reviews when searching find()
+const ReviewsSchema = mongoose.Schema({
+  _id: {
+    type: Number,
+    unique: true,
+    required: true
+  },
   product_id: {
     type: Number,
-    unique: true,
     required: true
   },
-  // unique review_id
-  review_id: {
-    type: Number,
-    unique: true,
-    required: true
-  },
-  // number from 1-5
   rating: {
     type: Number,
-    unique: true,
     required: true
   },
-  // string of max length 60
-  summary: {
-    type: String,
-    unique: true,
-    required: true
-  },
-  // string of length 50 - 1000
-  body: {
-    type: String,
-    unique: true,
-    required: true
-  },
-  // date format (Month DD, YYYY)
   date: {
     type: Date,
-    unique: true,
     required: true
   },
-  // True/ False
-  recommended: {
+  summary: {
+    type: String,
+    required: true
+  },
+  body: {
+    type: String,
+    required: true
+  },
+  recommend: {
     type: Boolean,
-    unique: true,
-    required: true
+    required: true,
   },
-  // {fit, length, comfort, quality}
-  characteristics: {
-    type: Object,
-    unique: true,
-    required: true
-  },
-  // True/ False
-  helpfulness: {
+  reported: {
     type: Boolean,
-    unique: true,
-    required: true
+    required: true,
   },
-  // [...photos_url]
-  photos: {
-    type: Array,
-    unique: true,
-    required: true
-  },
-  // string of unspecified length
   reviewer_name: {
     type: String,
+    required: true,
+    unique: true
+  },
+  reviewer_email: {
+    type: String,
+    required: true,
+    unique: true
+  },
+  response: {
+    type: String,
+  },
+  helpfulness: {
+    type: Number,
+    required: true
+  }
+});
+const Reviews = mongoose.model('Reviews', ReviewsSchema);
+// -- characteristics_reviews.csv
+// -- id,characteristic_id,review_id,value
+
+const CharacteristicsReviewsSchema = mongoose.Schema({
+  _id: {
+    type: Number,
     unique: true,
     required: true
   },
-  // string in email format
-  email: {
-    type: String,
-    unique: true,
+  characteristic_id: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Characteristics"
+  },
+  value: {
+    type: Number,
     required: true
+  }
+});
+const CharacteristicsReviews = mongoose.model('CharacteristicReviews', CharacteristicsReviewsSchema);
+// -- reviews_photos.csv
+// -- id,review_id,url
+
+const ReviewsPhotosSchema = mongoose.Schema({
+  _id: {
+    type: Number,
+    required: true,
+    unique: true
+  },
+  review_id: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Reviews"
+  }
+});
+const ReviewsPhotos = mongoose.model('ReviewsPhotos', ReviewsPhotosSchema);
+
+// -- characteristics.csv
+// -- id,product_id,name
+const Characteristics = mongoose.Schema({
+  _id: {
+    type: Number,
+    required: true,
+    unique: true
+  },
+  product_id: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Reviews"
+  },
+  name: {
+    type: String,
+    required: true,
+    enum: ['Fit', 'Length', 'Comfort', 'Quality']
   }
 })
