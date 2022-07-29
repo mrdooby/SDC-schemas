@@ -20,48 +20,49 @@
 -- 2,1,"Length"
 -- 3,1,"Comfort"
 -- 4,1,"Quality"
-CREATE TABLE product (
-  product_id INTEGER UNIQUE,
-  meta_data INTEGER,
-  reviews TEXT[][],
-  PRIMARY KEY product_id
+
+-- id,characteristic_id,review_id,value
+CREATE TABLE characteristics_reviews (
+  id INTEGER UNIQUE SERIAL,
+  characteristic_id INTEGER UNIQUE NOT NULL,
+  review_id INTEGER NOT NULL,
+  _value INTEGER NOT NULL,
+  PRIMARY KEY (id),
+  FOREIGN KEY (characteristic_id) REFERENCES characteristics(id),
+  FOREIGN KEY (review_id) REFERENCES reviews(id)
 );
 
--- avg and totals will be calculated based on review table
-CREATE TABLE meta_data (
+-- id,review_id,url
+CREATE TABLE reviews_photos (
   id INTEGER SERIAL,
-  product_id INTEGER,
-  total_ratings INTEGER,
-  total_recommended INTEGER,
-  avg_characteristics INTEGER,
-  PRIMARY KEY product_id REFERENCES product(product_id),
-)
+  review_id INTEGER NOT NULL,
+  _url TEXT,
+  PRIMARY KEY (id),
+  FOREIGN KEY (review_id) REFERENCES reviews(id)
+);
 
+-- id,product_id,rating,date,summary,body,recommend,reported,reviewer_name,reviewer_email,response,helpfulness
 CREATE TABLE reviews (
-  review_id INTEGER UNIQUE SERIAL,
-  product_id INTEGER,
-  rating INTEGER,
-  summary VARCHAR(60),
-  body VARCHAR(1000),
-  _date DATE,
-  recommended BOOLEAN,
-  characteristics INTEGER,
-  helpfulness BOOLEAN,
-  reported BOOLEAN,
-  photos text[][]
-  reviewer_name TEXT,
-  reviewer_email TEXT,
-  PRIMARY KEY review_id,
-  FOREIGN KEY characteristics REFERENCES characteristics(id) WHERE review_id = characteristics(review_id)
-)
--- will create index on reviews(ratings) to help sort by rating
--- will create index on reviews(product_id) to get easier access to the current product's reviews
+  id INTEGER UNIQUE SERIAL NOT NULL,
+  product_id INTEGER NOT NULL,
+  rating INTEGER NOT NULL,
+  _date DATE NOT NULL
+  summary VARCHAR(60) NOT NULL,
+  body VARCHAR(1000) NOT NULL,
+  recommended BOOLEAN NOT NULL,
+  reported BOOLEAN NOT NULL,
+  reviewer_name TEXT NOT NULL,
+  reviewer_email TEXT NOT NULL,
+  response TEXT,
+  helpfulness INTEGER NOT NULL,
+  PRIMARY KEY review_id
+);
+
+-- id,product_id,name
 CREATE TABLE characteristics (
-  id INTEGER,
-  review_id INTEGER,
-  fit INTEGER,
-  _length INTEGER,
-  comfort INTEGER,
-  quality INTEGER,
-  PRIMARY KEY id
+  id INTEGER SERIAL,
+  product_id INTEGER NOT NULL,
+  _name TEXT NOT NULL,
+  PRIMARY KEY (id),
+  FOREIGN KEY (product_id) REFERENCES reviews(product_id)
 )
